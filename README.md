@@ -39,6 +39,16 @@ Run Excel Writer tests:
 java -cp bin com.docwriter.ExcelWriterTest
 ```
 
+## Running the Demo
+
+Compile and run the demo application:
+```bash
+javac -cp bin -d bin src/main/java/com/docwriter/Demo.java
+java -cp bin com.docwriter.Demo
+```
+
+This will create sample files: `demo_employees.xlsx`, `demo_products.csv`, `demo_special.csv`, and `demo_semicolon.csv`
+
 ## Usage Examples
 
 ### Excel Writer
