@@ -17,6 +17,27 @@ A simple Java library for writing data to Excel (XLSX) and CSV files with no ext
 
 ## Building
 
+### Using Maven (Recommended)
+
+Build the project:
+```bash
+mvn clean compile
+```
+
+Run tests:
+```bash
+mvn test
+```
+
+Build package (JAR file):
+```bash
+mvn package
+```
+
+The JAR file will be created in the `target` directory as `doc-writer-1.0.0.jar`.
+
+### Manual Build
+
 Compile the source code:
 ```bash
 javac -d bin src/main/java/com/docwriter/*.java
@@ -28,6 +49,15 @@ javac -cp bin -d bin src/test/java/com/docwriter/*.java
 ```
 
 ## Running Tests
+
+### Using Maven (Recommended)
+
+Run all tests:
+```bash
+mvn test
+```
+
+### Manual Test Execution
 
 Run CSV Writer tests:
 ```bash
