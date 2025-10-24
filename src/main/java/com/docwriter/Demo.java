@@ -2,6 +2,7 @@ package com.docwriter;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Demo application showing how to use ExcelWriter and CsvWriter
@@ -13,6 +14,8 @@ public class Demo {
         System.out.println("===========================\n");
         
         demoExcelWriter();
+        System.out.println();
+        demoNewDataTypes();
         System.out.println();
         demoCsvWriter();
     }
@@ -65,6 +68,72 @@ public class Demo {
             
             System.out.println("✓ Created Excel file: " + outputFile.getAbsolutePath());
             System.out.println("  File size: " + outputFile.length() + " bytes");
+            
+        } catch (Exception e) {
+            System.err.println("Error creating Excel file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private static void demoNewDataTypes() {
+        System.out.println("New Data Types Demo:");
+        System.out.println("--------------------");
+        
+        try {
+            // Create a new Excel writer
+            ExcelWriter writer = new ExcelWriter("ExtendedDataTypes");
+            
+            // Add header row
+            writer.addRow(
+                ExcelWriter.createStringCell("Product"),
+                ExcelWriter.createStringCell("Price (EUR)"),
+                ExcelWriter.createStringCell("Price (GBP)"),
+                ExcelWriter.createStringCell("Price (JPY)"),
+                ExcelWriter.createStringCell("Amount"),
+                ExcelWriter.createStringCell("Currency"),
+                ExcelWriter.createStringCell("Last Updated"),
+                ExcelWriter.createStringCell("Update Time")
+            );
+            
+            // Create specific date and time
+            Calendar cal = Calendar.getInstance();
+            cal.set(2024, Calendar.OCTOBER, 24, 14, 30, 45);
+            Date testDateTime = cal.getTime();
+            
+            // Add sample data with new types
+            writer.addRow(
+                ExcelWriter.createStringCell("Product A"),
+                ExcelWriter.createCurrencyEurCell(1200.50),
+                ExcelWriter.createCurrencyGbpCell(1050.75),
+                ExcelWriter.createCurrencyJpyCell(180000),
+                ExcelWriter.createAmountCell(1300.25),
+                ExcelWriter.createStringCell("USD"),
+                ExcelWriter.createDateTimeCell(testDateTime),
+                ExcelWriter.createTimeCell(testDateTime)
+            );
+            
+            writer.addRow(
+                ExcelWriter.createStringCell("Product B"),
+                ExcelWriter.createCurrencyEurCell(850.00),
+                ExcelWriter.createCurrencyGbpCell(750.50),
+                ExcelWriter.createCurrencyJpyCell(125000),
+                ExcelWriter.createAmountCell(920.00),
+                ExcelWriter.createStringCell("EUR"),
+                ExcelWriter.createDateTimeCell(new Date()),
+                ExcelWriter.createTimeCell(new Date())
+            );
+            
+            // Write to file
+            File outputFile = new File("demo_new_types.xlsx");
+            writer.writeToFile(outputFile);
+            
+            System.out.println("✓ Created Excel file with new data types: " + outputFile.getAbsolutePath());
+            System.out.println("  File size: " + outputFile.length() + " bytes");
+            System.out.println("  Features demonstrated:");
+            System.out.println("    - Multiple currencies (EUR, GBP, JPY)");
+            System.out.println("    - Date/Time fields");
+            System.out.println("    - Time-only fields");
+            System.out.println("    - Amount without currency (currency in separate field)");
             
         } catch (Exception e) {
             System.err.println("Error creating Excel file: " + e.getMessage());
