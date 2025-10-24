@@ -36,17 +36,6 @@ mvn package
 
 The JAR file will be created in the `target` directory as `doc-writer-1.0.0.jar`.
 
-### Manual Build
-
-Compile the source code:
-```bash
-javac -d bin src/main/java/com/docwriter/*.java
-```
-
-Compile tests:
-```bash
-javac -cp bin -d bin src/test/java/com/docwriter/*.java
-```
 
 ## Running Tests
 
@@ -57,24 +46,13 @@ Run all tests:
 mvn test
 ```
 
-### Manual Test Execution
-
-Run CSV Writer tests:
-```bash
-java -cp bin com.docwriter.CsvWriterTest
-```
-
-Run Excel Writer tests:
-```bash
-java -cp bin com.docwriter.ExcelWriterTest
-```
 
 ## Running the Demo
 
 Compile and run the demo application:
 ```bash
-javac -cp bin -d bin src/main/java/com/docwriter/Demo.java
-java -cp bin com.docwriter.Demo
+javac -d target src/main/java/**.*.java
+java -cp target/doc-writer-1.0.0.jar com.docwriter.Demo
 ```
 
 This will create sample files: `demo_employees.xlsx`, `demo_products.csv`, `demo_special.csv`, and `demo_semicolon.csv`
