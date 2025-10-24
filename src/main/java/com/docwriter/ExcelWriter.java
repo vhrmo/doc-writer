@@ -20,7 +20,7 @@ public class ExcelWriter {
      */
     public static class CellData {
         public enum CellType {
-            STRING, NUMBER, DATE, CURRENCY
+            STRING, NUMBER, DATE, DATETIME, TIME, CURRENCY, CURRENCY_EUR, CURRENCY_GBP, CURRENCY_JPY, AMOUNT
         }
         
         private String value;
@@ -93,12 +93,68 @@ public class ExcelWriter {
     }
     
     /**
-     * Creates a currency cell
+     * Creates a currency cell (USD by default)
      * @param value Currency value
      * @return CellData object
      */
     public static CellData createCurrencyCell(double value) {
         return new CellData(String.valueOf(value), CellData.CellType.CURRENCY);
+    }
+    
+    /**
+     * Creates a currency cell with EUR symbol
+     * @param value Currency value
+     * @return CellData object
+     */
+    public static CellData createCurrencyEurCell(double value) {
+        return new CellData(String.valueOf(value), CellData.CellType.CURRENCY_EUR);
+    }
+    
+    /**
+     * Creates a currency cell with GBP symbol
+     * @param value Currency value
+     * @return CellData object
+     */
+    public static CellData createCurrencyGbpCell(double value) {
+        return new CellData(String.valueOf(value), CellData.CellType.CURRENCY_GBP);
+    }
+    
+    /**
+     * Creates a currency cell with JPY symbol
+     * @param value Currency value
+     * @return CellData object
+     */
+    public static CellData createCurrencyJpyCell(double value) {
+        return new CellData(String.valueOf(value), CellData.CellType.CURRENCY_JPY);
+    }
+    
+    /**
+     * Creates a date/time cell
+     * @param date Date/time value
+     * @return CellData object
+     */
+    public static CellData createDateTimeCell(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return new CellData(sdf.format(date), CellData.CellType.DATETIME);
+    }
+    
+    /**
+     * Creates a time cell
+     * @param date Date value (only time portion will be used)
+     * @return CellData object
+     */
+    public static CellData createTimeCell(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        return new CellData(sdf.format(date), CellData.CellType.TIME);
+    }
+    
+    /**
+     * Creates an amount cell without currency formatting
+     * @param value Numeric value
+     * @return CellData object
+     */
+    public static CellData createAmountCell(double value) {
+        return new CellData(String.valueOf(value), CellData.CellType.AMOUNT);
     }
     
     /**
@@ -206,9 +262,15 @@ public class ExcelWriter {
         
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n" +
-                "<numFmts count=\"2\">\n" +
+                "<numFmts count=\"7\">\n" +
                 "<numFmt numFmtId=\"164\" formatCode=\"yyyy-mm-dd\"/>\n" +
                 "<numFmt numFmtId=\"165\" formatCode=\"$#,##0.00\"/>\n" +
+                "<numFmt numFmtId=\"166\" formatCode=\"yyyy-mm-dd hh:mm:ss\"/>\n" +
+                "<numFmt numFmtId=\"167\" formatCode=\"hh:mm:ss\"/>\n" +
+                "<numFmt numFmtId=\"168\" formatCode=\"&quot;€&quot;#,##0.00\"/>\n" +
+                "<numFmt numFmtId=\"169\" formatCode=\"&quot;£&quot;#,##0.00\"/>\n" +
+                "<numFmt numFmtId=\"170\" formatCode=\"&quot;¥&quot;#,##0\"/>\n" +
+                "<numFmt numFmtId=\"171\" formatCode=\"#,##0.00\"/>\n" +
                 "</numFmts>\n" +
                 "<fonts count=\"1\">\n" +
                 "<font><sz val=\"11\"/><name val=\"Calibri\"/></font>\n" +
@@ -219,11 +281,17 @@ public class ExcelWriter {
                 "<borders count=\"1\">\n" +
                 "<border><left/><right/><top/><bottom/><diagonal/></border>\n" +
                 "</borders>\n" +
-                "<cellXfs count=\"4\">\n" +
+                "<cellXfs count=\"11\">\n" +
                 "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
                 "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
                 "<xf numFmtId=\"164\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
                 "<xf numFmtId=\"165\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
+                "<xf numFmtId=\"166\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
+                "<xf numFmtId=\"167\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
+                "<xf numFmtId=\"168\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
+                "<xf numFmtId=\"169\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
+                "<xf numFmtId=\"170\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
+                "<xf numFmtId=\"171\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n" +
                 "</cellXfs>\n" +
                 "</styleSheet>";
         
@@ -263,6 +331,32 @@ public class ExcelWriter {
                     xml.append("</c>\n");
                 } else if (cell.getType() == CellData.CellType.CURRENCY) {
                     xml.append("<c r=\"").append(cellRef).append("\" s=\"3\">");
+                    xml.append("<v>").append(cell.getValue()).append("</v>");
+                    xml.append("</c>\n");
+                } else if (cell.getType() == CellData.CellType.DATETIME) {
+                    // Convert datetime string to Excel serial number
+                    xml.append("<c r=\"").append(cellRef).append("\" s=\"4\">");
+                    xml.append("<v>").append(dateTimeToExcelSerial(cell.getValue())).append("</v>");
+                    xml.append("</c>\n");
+                } else if (cell.getType() == CellData.CellType.TIME) {
+                    // Convert time string to Excel serial fraction
+                    xml.append("<c r=\"").append(cellRef).append("\" s=\"5\">");
+                    xml.append("<v>").append(timeToExcelSerial(cell.getValue())).append("</v>");
+                    xml.append("</c>\n");
+                } else if (cell.getType() == CellData.CellType.CURRENCY_EUR) {
+                    xml.append("<c r=\"").append(cellRef).append("\" s=\"6\">");
+                    xml.append("<v>").append(cell.getValue()).append("</v>");
+                    xml.append("</c>\n");
+                } else if (cell.getType() == CellData.CellType.CURRENCY_GBP) {
+                    xml.append("<c r=\"").append(cellRef).append("\" s=\"7\">");
+                    xml.append("<v>").append(cell.getValue()).append("</v>");
+                    xml.append("</c>\n");
+                } else if (cell.getType() == CellData.CellType.CURRENCY_JPY) {
+                    xml.append("<c r=\"").append(cellRef).append("\" s=\"8\">");
+                    xml.append("<v>").append(cell.getValue()).append("</v>");
+                    xml.append("</c>\n");
+                } else if (cell.getType() == CellData.CellType.AMOUNT) {
+                    xml.append("<c r=\"").append(cellRef).append("\" s=\"9\">");
                     xml.append("<v>").append(cell.getValue()).append("</v>");
                     xml.append("</c>\n");
                 }
@@ -312,6 +406,42 @@ public class ExcelWriter {
             
             long diff = date.getTime() - excelEpoch.getTimeInMillis();
             return diff / (1000.0 * 60 * 60 * 24);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    
+    private double dateTimeToExcelSerial(String dateTimeStr) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = sdf.parse(dateTimeStr);
+            
+            // Excel epoch is December 30, 1899
+            Calendar excelEpoch = Calendar.getInstance();
+            excelEpoch.set(1899, Calendar.DECEMBER, 30, 0, 0, 0);
+            excelEpoch.set(Calendar.MILLISECOND, 0);
+            
+            long diff = date.getTime() - excelEpoch.getTimeInMillis();
+            return diff / (1000.0 * 60 * 60 * 24);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    
+    private double timeToExcelSerial(String timeStr) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            Date time = sdf.parse(timeStr);
+            
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(time);
+            
+            int hours = cal.get(Calendar.HOUR_OF_DAY);
+            int minutes = cal.get(Calendar.MINUTE);
+            int seconds = cal.get(Calendar.SECOND);
+            
+            // Convert to fraction of a day
+            return (hours * 3600 + minutes * 60 + seconds) / 86400.0;
         } catch (Exception e) {
             return 0;
         }
