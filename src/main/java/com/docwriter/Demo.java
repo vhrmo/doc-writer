@@ -103,9 +103,9 @@ public class Demo {
             // Add sample data with new types
             writer.addRow(
                 ExcelWriter.createStringCell("Product A"),
-                ExcelWriter.createCurrencyEurCell(1200.50),
-                ExcelWriter.createCurrencyGbpCell(1050.75),
-                ExcelWriter.createCurrencyJpyCell(180000),
+                ExcelWriter.createCurrencyCell(1200.50, "EUR"),
+                ExcelWriter.createCurrencyCell(1050.75, "GBP"),
+                ExcelWriter.createCurrencyCell(180000, "JPY"),
                 ExcelWriter.createAmountCell(1300.25),
                 ExcelWriter.createStringCell("USD"),
                 ExcelWriter.createDateTimeCell(testDateTime),
@@ -114,9 +114,9 @@ public class Demo {
             
             writer.addRow(
                 ExcelWriter.createStringCell("Product B"),
-                ExcelWriter.createCurrencyEurCell(850.00),
-                ExcelWriter.createCurrencyGbpCell(750.50),
-                ExcelWriter.createCurrencyJpyCell(125000),
+                ExcelWriter.createCurrencyCell(850.00, "EUR"),
+                ExcelWriter.createCurrencyCell(750.50, "GBP"),
+                ExcelWriter.createCurrencyCell(125000, "JPY"),
                 ExcelWriter.createAmountCell(920.00),
                 ExcelWriter.createStringCell("EUR"),
                 ExcelWriter.createDateTimeCell(new Date()),

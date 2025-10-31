@@ -116,22 +116,22 @@ public class ExcelWriterTest {
             // Test different currencies
             writer.addRow(
                 ExcelWriter.createStringCell("USD"),
-                ExcelWriter.createCurrencyCell(1000.50)
+                ExcelWriter.createCurrencyCell(1000.50, "USD")
             );
             
             writer.addRow(
                 ExcelWriter.createStringCell("EUR"),
-                ExcelWriter.createCurrencyEurCell(850.75)
+                ExcelWriter.createCurrencyCell(850.75, "EUR")
             );
             
             writer.addRow(
                 ExcelWriter.createStringCell("GBP"),
-                ExcelWriter.createCurrencyGbpCell(750.25)
+                ExcelWriter.createCurrencyCell(750.25, "GBP")
             );
             
             writer.addRow(
                 ExcelWriter.createStringCell("JPY"),
-                ExcelWriter.createCurrencyJpyCell(120000)
+                ExcelWriter.createCurrencyCell(120000, "JPY")
             );
             
             File outputFile = new File("/tmp/test_currencies.xlsx");
