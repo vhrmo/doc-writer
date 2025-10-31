@@ -5,7 +5,10 @@ A simple Java library for writing data to Excel (XLSX) and CSV files with no ext
 ## Features
 
 ### Excel Writer (XLSX)
-- Create Excel files with basic data types: String, Number, Date, Currency
+- Create Excel files with multiple data types: String, Number, Date, DateTime, Time, Currency (USD, EUR, GBP, JPY), Amount
+- Support for different currencies with proper formatting
+- Support for date, date/time, and time-only fields
+- Support for amounts without currency formatting (when currency is in a separate field)
 - No external dependencies - uses built-in Java libraries to create XLSX format
 - Simple API for adding rows and cells
 
@@ -89,6 +92,43 @@ writer.addRow(
 writer.writeToFile(new File("output.xlsx"));
 ```
 
+#### Using new data types
+
+```java
+import com.docwriter.ExcelWriter;
+import java.io.File;
+import java.util.Date;
+
+ExcelWriter writer = new ExcelWriter("ExtendedTypes");
+
+// Add header
+writer.addRow(
+    ExcelWriter.createStringCell("Product"),
+    ExcelWriter.createStringCell("Price (EUR)"),
+    ExcelWriter.createStringCell("Price (GBP)"),
+    ExcelWriter.createStringCell("Price (JPY)"),
+    ExcelWriter.createStringCell("Amount"),
+    ExcelWriter.createStringCell("Currency"),
+    ExcelWriter.createStringCell("Updated"),
+    ExcelWriter.createStringCell("Time")
+);
+
+// Add data with different currencies and date/time types
+Date now = new Date();
+writer.addRow(
+    ExcelWriter.createStringCell("Product A"),
+    ExcelWriter.createCurrencyCell(1200.50, "EUR"),     // EUR: €1,200.50
+    ExcelWriter.createCurrencyCell(1050.75, "GBP"),     // GBP: £1,050.75
+    ExcelWriter.createCurrencyCell(180000, "JPY"),      // JPY: ¥180,000
+    ExcelWriter.createAmountCell(1300.25),              // Amount: 1,300.25 (no currency symbol)
+    ExcelWriter.createStringCell("USD"),                // Currency in separate field
+    ExcelWriter.createDateTimeCell(now),                // Date and time
+    ExcelWriter.createTimeCell(now)                     // Time only
+);
+
+writer.writeToFile(new File("output.xlsx"));
+```
+
 ### CSV Writer
 
 ```java
@@ -119,7 +159,16 @@ semicolonWriter.writeToFile(new File("output.csv"));
 - **String**: Text data with XML escaping
 - **Number**: Numeric values (double)
 - **Date**: Date values formatted as yyyy-MM-dd
-- **Currency**: Numeric values with currency formatting ($#,##0.00)
+- **DateTime**: Date and time values formatted as yyyy-MM-dd HH:mm:ss
+- **Time**: Time-only values formatted as HH:mm:ss
+- **Currency**: Numeric values with currency formatting. Supports multiple currencies by passing a currency code:
+  - `createCurrencyCell(value)` - Defaults to USD ($#,##0.00)
+  - `createCurrencyCell(value, "USD")` - US Dollar ($#,##0.00)
+  - `createCurrencyCell(value, "EUR")` - Euro (€#,##0.00)
+  - `createCurrencyCell(value, "GBP")` - British Pound (£#,##0.00)
+  - `createCurrencyCell(value, "JPY")` - Japanese Yen (¥#,##0)
+  - Other currency codes can be used and will use their corresponding symbol
+- **Amount**: Numeric values formatted with thousand separators and two decimal places (#,##0.00), without currency symbol. Use this when the currency is stored in a separate field.
 
 ### CSV Writer
 - All data is treated as strings
